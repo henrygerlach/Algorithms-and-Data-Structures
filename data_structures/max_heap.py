@@ -4,7 +4,6 @@ from typing import List, Tuple
 
 
 class MaxHeap:
-
     def __init__(self, heap: List[Tuple[int, ...]]) -> None:
         self.size = len(heap)
         self.heap = self.build_heap(heap=heap)
@@ -13,16 +12,18 @@ class MaxHeap:
 
     def get_left_child(self, pos: int) -> int:
         return 2 * pos + 1
-    
+
     def get_right_child(self, pos: int) -> int:
         return 2 * pos + 2
 
     def get_parent(self, pos: int) -> int:
         return abs(pos - 1) // 2
-    
+
     def is_leaf(self, pos: int) -> bool:
-        return self.get_left_child(pos) >= self.size \
+        return (
+            self.get_left_child(pos) >= self.size
             and self.get_right_child(pos) >= self.size
+        )
 
     def swap(self, pos1: int, pos2: int) -> None:
         self.heap[pos1], self.heap[pos2] = self.heap[pos2], self.heap[pos1]
@@ -38,7 +39,7 @@ class MaxHeap:
             largest = l
         else:
             largest = pos
-        
+
         if r < self.size and self.heap[r][0] > self.heap[largest][0]:
             largest = r
 
@@ -53,7 +54,7 @@ class MaxHeap:
         for i in range((len(self.heap) // 2), -1, -1):
             self.heapify(i)
 
-        return self.heap   
+        return self.heap
 
     def insert(self, ele: Tuple[int, ...]) -> None:
         self.heap.append(ele)
@@ -77,10 +78,7 @@ class MaxHeap:
         return max_tuple
 
     def decrease_key(
-        self, 
-        new_prio: int, 
-        key: Tuple[int, ...] = None, 
-        pos: int = None
+        self, new_prio: int, key: Tuple[int, ...] = None, pos: int = None
     ) -> None:
         if key:
             pos = self.get_index(key)
@@ -94,9 +92,9 @@ class MaxHeap:
                 current = parent
             else:
                 break
-    
+
     def get_index(self, key: Tuple[int, ...]) -> int:
-        try:  
+        try:
             return self.heap.index(key)
         except ValueError:
             return None

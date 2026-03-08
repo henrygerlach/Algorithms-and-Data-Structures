@@ -13,6 +13,7 @@ def merge_sort(arr: list) -> list:
 
     return merge(left_half, right_half)
 
+
 def merge(left: list, right: list) -> list:
     """Merges two sorted lists into a single sorted list.
 

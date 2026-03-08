@@ -2,7 +2,6 @@ from typing import List
 
 
 class Stack:
-
     def __init__(
         self,
         stack: List,
@@ -13,7 +12,7 @@ class Stack:
     def add(self, x):
         self.stack.append(x)
         self.size += 1
-    
+
     def pop(self):
         out = self.stack.pop()
         self.size -= 1

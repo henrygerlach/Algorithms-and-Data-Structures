@@ -18,7 +18,6 @@ def kruskal(graph: Graph) -> Tuple[float, Graph]:
     ##### KRUSKAL ALGORITHM #####
 
     for edge in graph.edges:
-
         if num_mst_edges >= graph.V - 1:
             break
 

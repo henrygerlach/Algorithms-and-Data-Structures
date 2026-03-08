@@ -5,10 +5,7 @@ from typing import List, Tuple
 from data_structures import Node, Graph, Queue
 
 
-def bfs(
-    start: Node, 
-    graph: Graph
-) -> Tuple[List[int], List[int]]:
+def bfs(start: Node, graph: Graph) -> Tuple[List[int], List[int]]:
     dist, prev, visited = dict(), dict(), dict()
     for node in graph.nodes:
         dist[node] = np.inf
@@ -32,5 +29,5 @@ def bfs(
             queue.insert(nodeY)
             dist[nodeY] = dist[nodeX] + 1
             prev[nodeY] = nodeX
-    
+
     return dist, prev

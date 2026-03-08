@@ -2,13 +2,10 @@ import numpy as np
 
 from data_structures import MinHeap, Graph, Node
 
-from typing import Tuple, Dict 
+from typing import Tuple, Dict
 
 
-def dijkstra(
-    start: Node, 
-    graph: Graph
-) -> Tuple[Dict[any, float], Dict[any, any]]:
+def dijkstra(start: Node, graph: Graph) -> Tuple[Dict[any, float], Dict[any, any]]:
     prev, dist, visited = dict(), dict(), dict()
     for node in graph.nodes:
         prev[node] = None
@@ -17,8 +14,7 @@ def dijkstra(
     dist[start] = 0
 
     min_heap = MinHeap(
-        heap=[(0, start)] + 
-        [(np.inf, node) for node in graph.nodes if node != start]
+        heap=[(0, start)] + [(np.inf, node) for node in graph.nodes if node != start]
     )
 
     ##### DIJKSTRA ALGORITHM #####
@@ -30,7 +26,7 @@ def dijkstra(
         for nodeY in graph.adj_matrix[nodeX]:
             if visited[nodeY]:
                 continue
-            
+
             distXY = distX + graph.get_distance(nodeX, nodeY)
             distY = dist[nodeY]
 
@@ -38,5 +34,5 @@ def dijkstra(
                 min_heap.decrease_key(new_prio=distXY, key=(distY, nodeY))
                 dist[nodeY] = distXY
                 prev[nodeY] = nodeX
-    
+
     return dist, prev

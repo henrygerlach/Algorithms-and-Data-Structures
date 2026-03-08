@@ -1,29 +1,38 @@
 from .node import Node
 from .queue import Queue
-from helpers.bitarray_helpers import *
+from helpers.bitarray_helpers import (
+    DEFAULT_CHAR_BITS,
+    DEFAULT_FLOAT_BITS,
+    DEFAULT_VALUE_BITS,
+    bitarray_to_char,
+    bitarray_to_float,
+    bitarray_to_int,
+    char_to_bitarray,
+    float_to_bitarray,
+    int_to_bitarray,
+)
 
 from typing import Tuple
 from bitarray import bitarray
 
 
 class BinaryTree:
-
     def __init__(
         self,
         root: Node,
-        left: 'BinaryTree' = None,
-        right: 'BinaryTree' = None,
+        left: "BinaryTree" = None,
+        right: "BinaryTree" = None,
     ) -> None:
         self.root = root
         self.left = left
         self.right = right
 
     @classmethod
-    def from_list(cls: 'BinaryTree', vals: list) -> 'BinaryTree':
+    def from_list(cls: "BinaryTree", vals: list) -> "BinaryTree":
         """
-        Create a binary tree from a list representation 
+        Create a binary tree from a list representation
         (level-order traversal).
-        
+
         :param cls: Class reference
         :param vals: List of values (use None for missing nodes)
         :return: Binary tree constructed from the list
@@ -31,7 +40,7 @@ class BinaryTree:
         if not vals:
             return None
 
-        def _helper(index: int) -> Tuple['BinaryTree', int]:
+        def _helper(index: int) -> Tuple["BinaryTree", int]:
             if index >= len(vals) or vals[index] is None:
                 return None, index + 1
 
@@ -46,15 +55,15 @@ class BinaryTree:
 
     @classmethod
     def deserialize(
-        cls: 'BinaryTree',
-        bit_arr: bitarray, 
+        cls: "BinaryTree",
+        bit_arr: bitarray,
         val_type: str,
         val_bits: int = DEFAULT_VALUE_BITS,
-        only_leaf_vals: bool = False  
-    ) -> 'BinaryTree':
+        only_leaf_vals: bool = False,
+    ) -> "BinaryTree":
         """
         Deserialize a binary tree from a bitarray representation.
-        
+
         :param cls: Class reference
         :param bit_arr: Bitarray representation of the tree
         :param val_type: Type of values stored in the tree nodes
@@ -62,8 +71,8 @@ class BinaryTree:
         :param only_leaf_vals: Whether only leaf nodes carry values
         :return: Deserialized binary tree
         """
-        
-        def _decode(index: int) -> Tuple['BinaryTree', int]:
+
+        def _decode(index: int) -> Tuple["BinaryTree", int]:
             # if bit is 0, Node not present or end of array
             if index >= len(bit_arr) or bit_arr[index] == 0:
                 return None, index + 1 if only_leaf_vals else index + 2
@@ -76,19 +85,16 @@ class BinaryTree:
                 index += 1
 
             # only leaves carry values when only_leaf_vals is True
-            val = 0 if val_type == "int" else 0.0 \
-                if val_type == "float" else ''
+            val = 0 if val_type == "int" else 0.0 if val_type == "float" else ""
             if not only_leaf_vals or is_leaf:
                 if val_type == "int":
-                    val = bitarray_to_int(bit_arr[index:index + val_bits])
+                    val = bitarray_to_int(bit_arr[index : index + val_bits])
                     index += val_bits
                 elif val_type == "float":
-                    val = bitarray_to_float(bit_arr[index:index 
-                                                    + DEFAULT_FLOAT_BITS])
+                    val = bitarray_to_float(bit_arr[index : index + DEFAULT_FLOAT_BITS])
                     index += DEFAULT_FLOAT_BITS
                 elif val_type == "char":
-                    val = bitarray_to_char(bit_arr[index:index 
-                                                   + DEFAULT_CHAR_BITS])
+                    val = bitarray_to_char(bit_arr[index : index + DEFAULT_CHAR_BITS])
                     index += DEFAULT_CHAR_BITS
                 else:
                     raise ValueError("Unsupported value type")
@@ -102,39 +108,40 @@ class BinaryTree:
                 right_subtree, index = _decode(index)
 
             return BinaryTree(node, left_subtree, right_subtree), index
-        
+
         tree, _ = _decode(0)
         return tree
-    
 
     def serialize(
-        self, 
+        self,
         val_type: str,
         val_bits: int = DEFAULT_VALUE_BITS,
         val_func: callable = None,
-        only_leaf_vals: bool = False
+        only_leaf_vals: bool = False,
     ) -> bitarray:
         """
         Docstring für serialize
-        
+
         :param self: Instance of BinaryTree
         :param val_type: Type of values stored in the tree nodes
         :param val_bytes: Number of bytes used to represent each value
         :param val_func: Function to apply to each value before serialization
-        :param only_leaf_vals: Whether only leaf nodes should be serialized 
+        :param only_leaf_vals: Whether only leaf nodes should be serialized
         with values
         :return: Bitarray representation of the serialized tree
         """
         bit_arr = bitarray()
-        
-        def _serialize(cur: 'BinaryTree',) -> None:
+
+        def _serialize(
+            cur: "BinaryTree",
+        ) -> None:
             # 0 for Node not present, else 1 for present
             if not cur:
                 bit_arr.append(0)
                 return
             bit_arr.append(1)
-            
-            # Extra bit to mark leaf if only_leaf_vals 
+
+            # Extra bit to mark leaf if only_leaf_vals
             # so deserializer knows where values live
             is_leaf = cur.is_leaf()
             if only_leaf_vals:
@@ -143,7 +150,6 @@ class BinaryTree:
             # Only write values for leaves when only_leaf_vals is True
             # or for all nodes otherwise
             if not only_leaf_vals or is_leaf:
-
                 # Apply function to value if provided
                 val = cur.root.val
                 if val_func:
@@ -159,17 +165,17 @@ class BinaryTree:
                 else:
                     raise ValueError("Unsupported value type")
 
-            # Recurse on children only for internal nodes 
+            # Recurse on children only for internal nodes
             # when using leaf-only values
             if not is_leaf:
                 _serialize(cur.left)
                 _serialize(cur.right)
 
             return bit_arr
-        
+
         _serialize(self)
         return bit_arr
-    
+
     ##### Utility Methods #####
 
     def __str__(self) -> str:
@@ -181,23 +187,23 @@ class BinaryTree:
 
     def find(self, val):
 
-        def _find(val: any, cur: 'BinaryTree') -> 'BinaryTree':
+        def _find(val: any, cur: "BinaryTree") -> "BinaryTree":
             if not cur:
                 return None
 
             if cur.root.val == val:
                 return cur
-            
+
             left = _find(val, cur.left)
             if not left:
                 return _find(val, cur.right)
             return left
-        
+
         return _find(val, self)
-    
+
     def print_tree(self):
         queue = Queue([(self, 0)])
-        
+
         while queue.size:
             ele = queue.pop()
             if not ele[0]:

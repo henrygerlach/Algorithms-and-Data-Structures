@@ -1,3 +1,3 @@
-from .lz78 import *
-from .lz78_huffman import *
-from .huffman_coding import *
+from . import huffman_coding, lz78, lz78_huffman
+
+__all__ = ["huffman_coding", "lz78", "lz78_huffman"]
